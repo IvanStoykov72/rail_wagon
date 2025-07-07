@@ -1,0 +1,28 @@
+name: Validate Odoo Module
+
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install black pylint
+
+      - name: Lint Python code
+        run: |
+          find . -name "*.py" -not -path "./.*" | xargs pylint --errors-only
+
+      - name: Check XML files
+        run: |
+          find . -name "*.xml" -not -path "./.*" | xargs xmllint --noout
